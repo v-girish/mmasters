@@ -1,6 +1,9 @@
+from typing import List
+
+
 class MovieSnapshotService():
 
-    def create(self):
+    def create(self, titles: List[str]):
         pass
 
 
