@@ -4,16 +4,17 @@ from unittest.mock import patch
 from mmasters.app import Application
 from mmasters.service.movie_snapshot_service import MovieSnapshotService
 from mmasters.view.movie_snapshot_view import MovieSnapshotView
+from tests.config.test_config import TestConfig
 
 
 def authorization_header():
-    return {'x-api-key': 'abc'}
+    return {'x-api-key': TestConfig.API_KEY}
 
 
 class MovieSnapshotResourceTest(unittest.TestCase):
 
     def setUp(self):
-        self.app = Application.create_app()
+        self.app = Application.create_app(TestConfig)
         self.test_client = self.app.test_client()
 
     @patch("mmasters.resources.movie_snapshot.movie_snapshot_service")
