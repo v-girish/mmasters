@@ -13,6 +13,10 @@ class MovieSnapshotView:
     @property
     def release_year(self): return self.__release_year
 
+    def __eq__(self, other):
+        return self.__title == other.title and \
+               self.__release_year == other.release_year
+
 
 movie_snapshot_view_fields = {
     'title': fields.String,
