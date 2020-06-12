@@ -10,7 +10,7 @@ class MovieSnapshotResource(Resource):
 
     def __init__(self):
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument('titles', action='append')
+        self.parser.add_argument('titles', action='append', required=True, help="titles is a mandatory field")
 
     @marshal_with(fields=movie_snapshot_view_fields)
     def post(self):

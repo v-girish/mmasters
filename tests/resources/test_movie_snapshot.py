@@ -37,3 +37,30 @@ class MovieSnapshotResourceTest(unittest.TestCase):
         self.test_client.post("/movies-snapshots", json={"titles": ['3 Idiots']})
 
         movie_snapshot_service.create.assert_called_with(['3 Idiots'])
+
+    @patch("mmasters.resources.movie_snapshot.movie_snapshot_service")
+    def test_should_return_bad_request_as_status_when_titles_is_missing_in_payload(self, movie_snapshot_service: MovieSnapshotService):
+        movie_snapshot_service.create.return_value = [MovieSnapshotView('3 Idiots', "2009")]
+
+        response = self.test_client.post("/movies-snapshots", json={})
+
+        self.assertEqual(400, response.status_code)
+
+    @patch("mmasters.resources.movie_snapshot.movie_snapshot_service")
+    def test_should_return_bad_request_as_status_when_titles_is_empty_list_in_payload(self,
+                                                                                   movie_snapshot_service: MovieSnapshotService):
+        movie_snapshot_service.create.return_value = [MovieSnapshotView('3 Idiots', "2009")]
+
+        response = self.test_client.post("/movies-snapshots", json={'titles': []})
+
+        self.assertEqual(400, response.status_code)
+
+    @patch("mmasters.resources.movie_snapshot.movie_snapshot_service")
+    def test_should_return_error_message_in_response_when_titles_is_missing_in_payload(self,
+                                                                                   movie_snapshot_service: MovieSnapshotService):
+        movie_snapshot_service.create.return_value = [MovieSnapshotView('3 Idiots', "2009")]
+
+        response = self.test_client.post("/movies-snapshots", json={})
+
+        expected_message = {'message': {'titles': 'titles is a mandatory field'}}
+        self.assertEqual(expected_message, response.get_json())
