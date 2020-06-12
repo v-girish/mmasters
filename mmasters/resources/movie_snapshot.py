@@ -1,24 +1,10 @@
-from functools import wraps
 from http import HTTPStatus
-from flask import current_app as app
 
-import flask_restful
-from flask import request
 from flask_restful import Resource, marshal_with, reqparse
 
+from mmasters.decorator.api_key_authentication import api_key_required
 from mmasters.service.movie_snapshot_service import movie_snapshot_service
 from mmasters.view.movie_snapshot_view import movie_snapshot_view_fields
-
-
-def api_key_required(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        api_key = request.headers.get('x-api-key')
-        if api_key != app.config.get('API_KEY'):
-            flask_restful.abort(HTTPStatus.UNAUTHORIZED)
-        return func(*args, **kwargs)
-
-    return wrapper
 
 
 class MovieSnapshotResource(Resource):
