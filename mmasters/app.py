@@ -6,7 +6,7 @@ from flask_restful import Api
 
 from mmasters.config.config import Config
 from mmasters.config.db_config import db
-from mmasters.resources.movie_snapshot_resource import MovieSnapshotResource
+from mmasters.resource.movie_snapshot_resource import MovieSnapshotResource
 
 
 class Application:

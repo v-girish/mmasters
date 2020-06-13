@@ -2,7 +2,6 @@ import unittest
 from unittest.mock import patch
 
 from mmasters.app import Application
-from mmasters.view.movie_snapshot_view import MovieSnapshotView
 from tests.builder.movie_snapshot_builder import MovieSnapshotBuilder
 from tests.config.test_config import TestConfig
 
@@ -16,7 +15,7 @@ class MovieSnapshotResourceTest(unittest.TestCase):
     def setUp(self):
         self.app = Application.create_app(TestConfig)
         self.test_client = self.app.test_client()
-        self.movie_snapshot_service_patch = patch("mmasters.resources.movie_snapshot_resource.movie_snapshot_service")
+        self.movie_snapshot_service_patch = patch("mmasters.resource.movie_snapshot_resource.movie_snapshot_service")
         self.movie_snapshot_service = self.movie_snapshot_service_patch.start()
 
     def tearDown(self) -> None:
