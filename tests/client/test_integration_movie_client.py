@@ -3,15 +3,17 @@ import unittest
 import requests_mock
 
 from mmasters.app import Application
-from mmasters.client.model.movie import Movie
+from mmasters.client.model.movie import Movie, Rating
 from mmasters.client.movie_client import movie_client
 from mmasters.exception.exception import MovieNotFoundException, MovieClientException
+from tests.builder.movies import Dangal
+from tests.config.test_config import TestConfig
 
 
 class MovieClientIntegrationTest(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.app = Application.create_app({})
+        self.app = Application.create_app(TestConfig)
         self.app.config['OMDB_API_BASE_URL'] = 'http://localhost:9999/'
         self.app.config['OMDB_API_KEY'] = 'obmdb_api_key'
         self.app.app_context().push()
@@ -32,10 +34,6 @@ class MovieClientIntegrationTest(unittest.TestCase):
                     {
                         "Source": "Rotten Tomatoes",
                         "Value": "100%"
-                    },
-                    {
-                        "Source": "Metacritic",
-                        "Value": "67/100"
                     }
                 ]
             }
@@ -44,8 +42,7 @@ class MovieClientIntegrationTest(unittest.TestCase):
 
         actual_movie_response = movie_client.fetch_movies('Dangal')
 
-        expected_movie = Movie("Dangal", "2009")
-        self.assertEqual(expected_movie, actual_movie_response)
+        self.assertEqual(Dangal, actual_movie_response)
 
     @requests_mock.Mocker()
     def test_should_raise_movie_not_found_exception_when_movie_does_not_exist_with_that_title(self, mock_request):
@@ -89,5 +86,3 @@ class MovieClientIntegrationTest(unittest.TestCase):
             movie_client.fetch_movies('Dangal')
 
         self.assertEqual("Something went wrong", context.exception.message)
-
-

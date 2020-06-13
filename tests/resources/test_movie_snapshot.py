@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from mmasters.app import Application
 from mmasters.view.movie_snapshot_view import MovieSnapshotView
+from tests.builder.movie_snapshot_builder import MovieSnapshotBuilder
 from tests.config.test_config import TestConfig
 
 
@@ -29,20 +30,22 @@ class MovieSnapshotResourceTest(unittest.TestCase):
         self.assertEqual(201, response.status_code)
 
     def test_should_return_created_movie_snapshots(self):
-        self.movie_snapshot_service.create.return_value = [MovieSnapshotView('3 Idiots', "2009")]
+        self.movie_snapshot_service.create.return_value = [MovieSnapshotBuilder().with_title("3 Idiots").build()]
 
         response = self.test_client.post("/movies-snapshots",
                                          json={"titles": ['3 Idiots']},
                                          headers=authorization_header())
 
-        expected_json = [{
-            "title": "3 Idiots",
-            "releaseYear": "2009"
-        }]
+        expected_json = [{'director': 'Timur Bekmambetov',
+                          'ratings': [{'source': 'Internet Movie Database', 'value': '6.7/10'},
+                                      {'source': 'Rotten Tomatoes', 'value': '71%'}],
+                          'releaseDate': '27 June 2008',
+                          'releaseYear': '2008',
+                          'title': '3 Idiots'}]
         self.assertEqual(expected_json, response.get_json())
 
     def test_should_create_movie_snapshots_with_titles_passed_as_payload(self):
-        self.movie_snapshot_service.create.return_value = [MovieSnapshotView('3 Idiots', "2009")]
+        self.movie_snapshot_service.create.return_value = [MovieSnapshotBuilder().with_title("3 Idiots").build()]
 
         self.test_client.post("/movies-snapshots",
                               json={"titles": ['3 Idiots']},
@@ -51,7 +54,7 @@ class MovieSnapshotResourceTest(unittest.TestCase):
         self.movie_snapshot_service.create.assert_called_with(['3 Idiots'])
 
     def test_should_return_bad_request_as_status_when_titles_is_missing_in_payload(self):
-        self.movie_snapshot_service.create.return_value = [MovieSnapshotView('3 Idiots', "2009")]
+        self.movie_snapshot_service.create.return_value = [MovieSnapshotBuilder().with_title("3 Idiots").build()]
 
         response = self.test_client.post("/movies-snapshots",
                                          json={},
@@ -60,7 +63,7 @@ class MovieSnapshotResourceTest(unittest.TestCase):
         self.assertEqual(400, response.status_code)
 
     def test_should_return_bad_request_as_status_when_titles_is_empty_list_in_payload(self):
-        self.movie_snapshot_service.create.return_value = [MovieSnapshotView('3 Idiots', "2009")]
+        self.movie_snapshot_service.create.return_value = [MovieSnapshotBuilder().with_title("3 Idiots").build()]
 
         response = self.test_client.post("/movies-snapshots",
                                          json={'titles': []},
@@ -69,7 +72,7 @@ class MovieSnapshotResourceTest(unittest.TestCase):
         self.assertEqual(400, response.status_code)
 
     def test_should_return_error_message_in_response_when_titles_is_missing_in_payload(self):
-        self.movie_snapshot_service.create.return_value = [MovieSnapshotView('3 Idiots', "2009")]
+        self.movie_snapshot_service.create.return_value = [MovieSnapshotBuilder().with_title("3 Idiots").build()]
 
         response = self.test_client.post("/movies-snapshots",
                                          json={},
