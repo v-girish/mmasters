@@ -1,6 +1,6 @@
 from typing import List
 
-from mmasters.app import db
+from mmasters.config.db_config import db
 from mmasters.entity.movie_snapshot import MovieSnapshot
 
 

@@ -3,15 +3,12 @@ from typing import Type
 from flask import Flask
 from flask_migrate import Migrate
 from flask_restful import Api
-from flask_sqlalchemy import SQLAlchemy
 
 from mmasters.config.config import Config
+from mmasters.config.db_config import db
 from mmasters.resources.greetings import GreetingsResource
 from mmasters.resources.movie_snapshot_resource import MovieSnapshotResource
 
-db = SQLAlchemy()
-
-from mmasters.entity.movie_snapshot import MovieSnapshot
 
 class Application:
 
