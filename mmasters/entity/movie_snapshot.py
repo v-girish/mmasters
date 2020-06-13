@@ -9,12 +9,12 @@ from mmasters.view.movie_snapshot_view import MovieSnapshotView, RatingView
 
 class MovieSnapshot(db.Model):
     __tablename__ = 'movie_snapshots'
-    title = db.Column(db.String, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title = db.Column(db.String)
     release_year = db.Column(db.String)
     release_date = db.Column(db.String)
     director = db.Column(db.String)
-    ratings: List[Rating] = db.relationship('Rating',
-                                            backref=db.backref('movie_snapshot', lazy=True))
+    ratings: List[Rating] = db.relationship('Rating', backref=db.backref('movie_snapshot', lazy=True))
 
     @staticmethod
     def of(movie: Movie) -> MovieSnapshot:
@@ -33,7 +33,7 @@ class MovieSnapshot(db.Model):
 class Rating(db.Model):
     __tablename__ = "ratings"
     ratings_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    movie_snapshot_title = db.Column(db.String, db.ForeignKey('movie_snapshots.title'), nullable=False)
+    movie_snapshot_id = db.Column(db.Integer, db.ForeignKey('movie_snapshots.id'), nullable=False)
     source = db.Column(db.String)
     value = db.Column(db.String)
 
