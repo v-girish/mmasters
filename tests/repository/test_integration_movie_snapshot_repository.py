@@ -32,7 +32,7 @@ class MovieSnapshotRepositoryIntegrationTest(TestCase):
                                        director='Rajkumar Hirani',
                                        ratings=[ratings])
         MovieSnapshotRepository().save(movie_snapshot)
-        saved_movie_snapshots = movie_snapshot_repository.findAll()
+        saved_movie_snapshots = movie_snapshot_repository.find_all()
 
         expected_movie_snapshots = [movie_snapshot]
 

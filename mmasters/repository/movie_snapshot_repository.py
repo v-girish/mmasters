@@ -9,7 +9,7 @@ class MovieSnapshotRepository:
         db.session.add(movie_snapshot)
         db.session.commit()
 
-    def findAll(self) -> List[MovieSnapshot]:
+    def find_all(self) -> List[MovieSnapshot]:
         return MovieSnapshot.query.all()
 
 

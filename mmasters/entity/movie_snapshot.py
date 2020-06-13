@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+from typing import List
+
 from mmasters.client.model.movie import Movie
 from mmasters.config.db_config import db
+from mmasters.view.movie_snapshot_view import MovieSnapshotView, RatingView
 
 
 class MovieSnapshot(db.Model):
@@ -11,7 +14,7 @@ class MovieSnapshot(db.Model):
     release_year = db.Column(db.String)
     release_date = db.Column(db.String)
     director = db.Column(db.String)
-    ratings = db.relationship('Rating', backref=db.backref('movie_snapshot', lazy=True))
+    ratings: List[Rating] = db.relationship('Rating', backref=db.backref('movie_snapshot', lazy=True))
 
     @staticmethod
     def of(movie: Movie) -> MovieSnapshot:
@@ -22,6 +25,10 @@ class MovieSnapshot(db.Model):
                              director=movie.director,
                              ratings=ratings)
 
+    def to_snapshot_view(self) -> MovieSnapshotView:
+        ratings_view = [rating.to_snapshot_view() for rating in self.ratings]
+        return MovieSnapshotView(self.title, self.release_year, self.release_date, self.director, ratings_view)
+
 
 class Rating(db.Model):
     __tablename__ = "ratings"
@@ -29,5 +36,8 @@ class Rating(db.Model):
     movie_snapshot_id = db.Column(db.Integer, db.ForeignKey('movie_snapshots.id'), nullable=False)
     source = db.Column(db.String)
     value = db.Column(db.String)
+
+    def to_snapshot_view(self) -> RatingView:
+        return RatingView(self.source, self.value)
 
 
