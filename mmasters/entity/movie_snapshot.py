@@ -7,7 +7,7 @@ class MovieSnapshot(db.Model):
     title = db.Column(db.String)
     release_year = db.Column(db.String)
     release_date = db.Column(db.String)
-    directory = db.Column(db.String)
+    director = db.Column(db.String)
     ratings = db.relationship('Ratings', backref=db.backref('movie_snapshot', lazy=True))
 
 
