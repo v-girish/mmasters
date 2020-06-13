@@ -3,7 +3,6 @@ import unittest
 import requests_mock
 
 from mmasters.app import Application
-from mmasters.client.model.movie import Movie, Rating
 from mmasters.client.movie_client import movie_client
 from mmasters.exception.exception import MovieNotFoundException, MovieClientException
 from tests.builder.movies import Dangal

@@ -1,7 +1,6 @@
 from unittest import TestCase
 from unittest.mock import patch, call
 
-from mmasters.entity.movie_snapshot import MovieSnapshot, Ratings
 from mmasters.service.movie_snapshot_service import movie_snapshot_service
 from mmasters.view.movie_snapshot_view import MovieSnapshotView, RatingView
 from tests.builder import movies

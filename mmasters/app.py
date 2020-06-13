@@ -6,7 +6,6 @@ from flask_restful import Api
 
 from mmasters.config.config import Config
 from mmasters.config.db_config import db
-from mmasters.resources.greetings import GreetingsResource
 from mmasters.resources.movie_snapshot_resource import MovieSnapshotResource
 
 
@@ -19,7 +18,6 @@ class Application:
 
         api = Api(app)
 
-        api.add_resource(GreetingsResource, '/greetings')
         api.add_resource(MovieSnapshotResource, '/movies-snapshots')
 
         db.init_app(app)
