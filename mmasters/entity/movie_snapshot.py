@@ -11,11 +11,11 @@ class MovieSnapshot(db.Model):
     release_year = db.Column(db.String)
     release_date = db.Column(db.String)
     director = db.Column(db.String)
-    ratings = db.relationship('Ratings', backref=db.backref('movie_snapshot', lazy=True))
+    ratings = db.relationship('Rating', backref=db.backref('movie_snapshot', lazy=True))
 
     @staticmethod
     def of(movie: Movie) -> MovieSnapshot:
-        ratings = [Ratings(source=rating.source, value=rating.value) for rating in movie.ratings]
+        ratings = [Rating(source=rating.source, value=rating.value) for rating in movie.ratings]
         return MovieSnapshot(title=movie.title,
                              release_year=movie.release_year,
                              release_date=movie.release_date,
@@ -23,7 +23,7 @@ class MovieSnapshot(db.Model):
                              ratings=ratings)
 
 
-class Ratings(db.Model):
+class Rating(db.Model):
     __tablename__ = "ratings"
     ratings_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     movie_snapshot_id = db.Column(db.Integer, db.ForeignKey('movie_snapshots.id'), nullable=False)
