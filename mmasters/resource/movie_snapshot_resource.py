@@ -19,3 +19,8 @@ class MovieSnapshotResource(Resource):
         args = self.parser.parse_args()
         movie_snapshots = movie_snapshot_service.create(args["titles"])
         return movie_snapshots, HTTPStatus.CREATED
+
+    @marshal_with(fields=movie_snapshot_view_fields)
+    def get(self):
+        movie_snapshots = movie_snapshot_service.get_all()
+        return movie_snapshots, HTTPStatus.OK

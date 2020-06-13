@@ -85,3 +85,30 @@ class MovieSnapshotResourceTest(unittest.TestCase):
 
         self.assertEqual(401, response.status_code)
 
+    def test_should_return_status_code_as_200_for_get_request_for_movie_snapshots(self):
+        self.movie_snapshot_service.get_all.return_value = [MovieSnapshotBuilder().with_title("3 Idiots").build()]
+
+        response = self.test_client.get("/movies-snapshots")
+
+        self.assertEqual(200, response.status_code)
+
+    def test_should_return_movie_snapshots_in_response_body_for_get_request_for_movie_snapshots(self):
+        self.movie_snapshot_service.get_all.return_value = [MovieSnapshotBuilder().with_title("3 Idiots").build()]
+
+        response = self.test_client.get("/movies-snapshots")
+
+        expected_json = [{"director": "Timur Bekmambetov",
+                          "ratings": [{"source": "Internet Movie Database", "value": "6.7/10"},
+                                      {"source": "Rotten Tomatoes", "value": "71%"}],
+                          "releaseDate": "27 June 2008",
+                          "releaseYear": "2008",
+                          "title": "3 Idiots"}]
+
+        self.assertEqual(expected_json, response.get_json())
+
+    def test_should_retrieve_movie_snapshots_from_movie_snapshot_service(self):
+        self.movie_snapshot_service.get_all.return_value = [MovieSnapshotBuilder().with_title("3 Idiots").build()]
+
+        self.test_client.get("/movies-snapshots")
+
+        self.movie_snapshot_service.get_all.assert_called_once()
