@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch
 
 from mmasters.app import Application
-from tests.builder.movie_snapshot_builder import MovieSnapshotBuilder
+from tests.builder.movie_snapshot_view_builder import MovieSnapshotViewBuilder
 from tests.config.test_config import TestConfig
 
 
@@ -29,7 +29,7 @@ class MovieSnapshotResourceTest(unittest.TestCase):
         self.assertEqual(201, response.status_code)
 
     def test_should_return_created_movie_snapshots(self):
-        self.movie_snapshot_service.create.return_value = [MovieSnapshotBuilder().with_title("3 Idiots").build()]
+        self.movie_snapshot_service.create.return_value = [MovieSnapshotViewBuilder().with_title("3 Idiots").build()]
 
         response = self.test_client.post("/movies-snapshots",
                                          json={"titles": ['3 Idiots']},
@@ -44,7 +44,7 @@ class MovieSnapshotResourceTest(unittest.TestCase):
         self.assertEqual(expected_json, response.get_json())
 
     def test_should_create_movie_snapshots_with_titles_passed_as_payload(self):
-        self.movie_snapshot_service.create.return_value = [MovieSnapshotBuilder().with_title("3 Idiots").build()]
+        self.movie_snapshot_service.create.return_value = [MovieSnapshotViewBuilder().with_title("3 Idiots").build()]
 
         self.test_client.post("/movies-snapshots",
                               json={"titles": ['3 Idiots']},
@@ -53,7 +53,7 @@ class MovieSnapshotResourceTest(unittest.TestCase):
         self.movie_snapshot_service.create.assert_called_with(['3 Idiots'])
 
     def test_should_return_bad_request_as_status_when_titles_is_missing_in_payload(self):
-        self.movie_snapshot_service.create.return_value = [MovieSnapshotBuilder().with_title("3 Idiots").build()]
+        self.movie_snapshot_service.create.return_value = [MovieSnapshotViewBuilder().with_title("3 Idiots").build()]
 
         response = self.test_client.post("/movies-snapshots",
                                          json={},
@@ -62,7 +62,7 @@ class MovieSnapshotResourceTest(unittest.TestCase):
         self.assertEqual(400, response.status_code)
 
     def test_should_return_bad_request_as_status_when_titles_is_empty_list_in_payload(self):
-        self.movie_snapshot_service.create.return_value = [MovieSnapshotBuilder().with_title("3 Idiots").build()]
+        self.movie_snapshot_service.create.return_value = [MovieSnapshotViewBuilder().with_title("3 Idiots").build()]
 
         response = self.test_client.post("/movies-snapshots",
                                          json={'titles': []},
@@ -71,7 +71,7 @@ class MovieSnapshotResourceTest(unittest.TestCase):
         self.assertEqual(400, response.status_code)
 
     def test_should_return_error_message_in_response_when_titles_is_missing_in_payload(self):
-        self.movie_snapshot_service.create.return_value = [MovieSnapshotBuilder().with_title("3 Idiots").build()]
+        self.movie_snapshot_service.create.return_value = [MovieSnapshotViewBuilder().with_title("3 Idiots").build()]
 
         response = self.test_client.post("/movies-snapshots",
                                          json={},
@@ -86,14 +86,14 @@ class MovieSnapshotResourceTest(unittest.TestCase):
         self.assertEqual(401, response.status_code)
 
     def test_should_return_status_code_as_200_for_get_request_for_movie_snapshots(self):
-        self.movie_snapshot_service.get_all.return_value = [MovieSnapshotBuilder().with_title("3 Idiots").build()]
+        self.movie_snapshot_service.get_all.return_value = [MovieSnapshotViewBuilder().with_title("3 Idiots").build()]
 
         response = self.test_client.get("/movies-snapshots")
 
         self.assertEqual(200, response.status_code)
 
     def test_should_return_movie_snapshots_in_response_body_for_get_request_for_movie_snapshots(self):
-        self.movie_snapshot_service.get_all.return_value = [MovieSnapshotBuilder().with_title("3 Idiots").build()]
+        self.movie_snapshot_service.get_all.return_value = [MovieSnapshotViewBuilder().with_title("3 Idiots").build()]
 
         response = self.test_client.get("/movies-snapshots")
 
@@ -107,7 +107,7 @@ class MovieSnapshotResourceTest(unittest.TestCase):
         self.assertEqual(expected_json, response.get_json())
 
     def test_should_retrieve_movie_snapshots_from_movie_snapshot_service(self):
-        self.movie_snapshot_service.get_all.return_value = [MovieSnapshotBuilder().with_title("3 Idiots").build()]
+        self.movie_snapshot_service.get_all.return_value = [MovieSnapshotViewBuilder().with_title("3 Idiots").build()]
 
         self.test_client.get("/movies-snapshots")
 

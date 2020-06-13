@@ -1,7 +1,7 @@
 from mmasters.view.movie_snapshot_view import RatingView, MovieSnapshotView
 
 
-class MovieSnapshotBuilder:
+class MovieSnapshotViewBuilder:
 
     def __init__(self):
         self.__title = "Wanted"
