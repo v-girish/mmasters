@@ -28,10 +28,6 @@ class Movie:
     @property
     def ratings(self) -> List[Rating]: return self.__ratings.copy()
 
-    def to_snapshot_view(self) -> MovieSnapshotView:
-        ratings_view = [rating.to_snapshot_view() for rating in self.__ratings]
-        return MovieSnapshotView(self.__title, self.__release_year, self.__release_date, self.__director, ratings_view)
-
     @classmethod
     def from_json(cls, json_response: dict) -> Movie:
         ratings = [Rating.from_json(rating) for rating in json_response['Ratings']]
@@ -66,5 +62,3 @@ class Rating:
     def from_json(cls, json_response: dict) -> Rating:
         return Rating(json_response['Source'], json_response['Value'])
 
-    def to_snapshot_view(self) -> RatingView:
-        return RatingView(self.__source, self.__value)

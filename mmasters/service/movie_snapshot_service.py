@@ -9,9 +9,12 @@ class MovieSnapshotService:
 
     def create(self, titles: List[str]):
         movies = [movie_client.fetch_movies(title) for title in titles]
+        movie_snapshots_view = []
         for movie in movies:
-            movie_snapshot_repository.save(MovieSnapshot.of(movie))
-        return list(map(lambda _movie: _movie.to_snapshot_view(), movies))
+            movie_snapshot = MovieSnapshot.of(movie)
+            movie_snapshot_repository.save(movie_snapshot)
+            movie_snapshots_view.append(movie_snapshot.to_snapshot_view())
+        return movie_snapshots_view
 
     def get_all(self):
         movie_snapshots = movie_snapshot_repository.find_all()
