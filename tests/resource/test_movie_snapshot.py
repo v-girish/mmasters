@@ -87,6 +87,14 @@ class MovieSnapshotResourceTest(unittest.TestCase):
 
         self.assertEqual(401, response.status_code)
 
+    def test_should_return_internal_server_error_as_status_code_in_case_of_exception(self):
+        self.movie_snapshot_service.create.side_effect = Exception("something went wrong")
+        response = self.test_client.post("/movies-snapshots",
+                                         json={"titles": ['3 Idiots']},
+                                         headers=authorization_header())
+
+        self.assertEqual(500, response.status_code)
+
     def test_should_return_status_code_as_200_for_get_request_for_movie_snapshots(self):
         self.movie_snapshot_service.get_all.return_value = [MovieSnapshotViewBuilder().with_title("3 Idiots").build()]
 
