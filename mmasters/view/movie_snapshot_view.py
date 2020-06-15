@@ -28,6 +28,9 @@ class MovieSnapshotView:
     @property
     def ratings_view(self) -> List[RatingView]: return self.__ratings_view.copy()
 
+    @property
+    def is_empty(self): return False
+
     def __eq__(self, other):
         return self.title == other.title and \
                self.release_year == other.release_year and \
@@ -64,6 +67,14 @@ class RatingView:
         return self.__str__()
 
 
+class EmptyMovieSnapshotView(MovieSnapshotView):
+    def __init__(self, title):
+        super(EmptyMovieSnapshotView, self).__init__(title, "", "", "", [])
+
+    @property
+    def is_empty(self): return True
+
+
 ratings_view_fields = {
     "source": fields.String,
     "value": fields.String
@@ -74,5 +85,6 @@ movie_snapshot_view_fields = {
     'releaseYear': fields.String(attribute="release_year"),
     'releaseDate': fields.String(attribute="release_date"),
     'director': fields.String,
+    'is_empty': fields.Boolean,
     'ratings': fields.List(fields.Nested(ratings_view_fields), attribute="ratings_view")
 }

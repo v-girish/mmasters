@@ -62,3 +62,7 @@ class Rating:
     def from_json(cls, json_response: dict) -> Rating:
         return Rating(json_response['Source'], json_response['Value'])
 
+
+class EmptyMovie(Movie):
+    def __init__(self, title: str):
+        super().__init__(title, "", "", "", [])

@@ -40,7 +40,9 @@ class MovieSnapshotResourceTest(unittest.TestCase):
                                       {'source': 'Rotten Tomatoes', 'value': '71%'}],
                           'releaseDate': '27 June 2008',
                           'releaseYear': '2008',
-                          'title': '3 Idiots'}]
+                          'title': '3 Idiots',
+                          'is_empty': False
+                          }]
         self.assertEqual(expected_json, response.get_json())
 
     def test_should_create_movie_snapshots_with_titles_passed_as_payload(self):
@@ -102,7 +104,8 @@ class MovieSnapshotResourceTest(unittest.TestCase):
                                       {"source": "Rotten Tomatoes", "value": "71%"}],
                           "releaseDate": "27 June 2008",
                           "releaseYear": "2008",
-                          "title": "3 Idiots"}]
+                          "title": "3 Idiots",
+                          'is_empty': False}]
 
         self.assertEqual(expected_json, response.get_json())
 

@@ -35,7 +35,8 @@ class MovieSnapshotResourceIntegrationTest(unittest.TestCase):
                                       {'source': 'Rotten Tomatoes', 'value': '100%'}],
                           'releaseDate': '25 Dec 2009',
                           'releaseYear': '2009',
-                          'title': 'Dangal'}]
+                          'title': 'Dangal',
+                          'is_empty': False}]
         self.assertEqual(201, response.status_code)
         self.assertEqual(expected_json, response.get_json())
 
@@ -70,7 +71,8 @@ class MovieSnapshotResourceIntegrationTest(unittest.TestCase):
                           'ratings': [{'source': 'Internet Movie Database', 'value': '8.4/10'}],
                           'releaseDate': '25 Dec 2009',
                           'releaseYear': '2009',
-                          'title': '3 Idiots'}]
+                          'title': '3 Idiots',
+                          'is_empty': False}]
         self.assertEqual(200, response.status_code)
         self.assertEqual(expected_json, response.get_json())
 
