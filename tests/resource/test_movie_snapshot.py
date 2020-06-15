@@ -21,14 +21,14 @@ class MovieSnapshotResourceTest(unittest.TestCase):
     def tearDown(self) -> None:
         self.movie_snapshot_service_patch.stop()
 
-    def test_should_return_status_code_as_created_when_movies_snapshots_are_created(self):
+    def test_should_return_status_code_as_created_when_new_movies_snapshots_are_created(self):
         response = self.test_client.post("/movies-snapshots",
                                          json={"titles": ['3 Idiots', 'Dangal']},
                                          headers=authorization_header())
 
         self.assertEqual(201, response.status_code)
 
-    def test_should_return_created_movie_snapshots(self):
+    def test_should_return_movie_snapshots_that_are_newly_created(self):
         self.movie_snapshot_service.create.return_value = [MovieSnapshotViewBuilder().with_title("3 Idiots").build()]
 
         response = self.test_client.post("/movies-snapshots",
@@ -109,9 +109,3 @@ class MovieSnapshotResourceTest(unittest.TestCase):
 
         self.assertEqual(expected_json, response.get_json())
 
-    def test_should_retrieve_movie_snapshots_from_movie_snapshot_service(self):
-        self.movie_snapshot_service.get_all.return_value = [MovieSnapshotViewBuilder().with_title("3 Idiots").build()]
-
-        self.test_client.get("/movies-snapshots")
-
-        self.movie_snapshot_service.get_all.assert_called_once()
