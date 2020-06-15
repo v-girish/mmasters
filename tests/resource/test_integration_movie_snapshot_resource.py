@@ -24,8 +24,8 @@ class MovieSnapshotResourceIntegrationTest(unittest.TestCase):
         MovieSnapshot.query.delete()
 
     @requests_mock.Mocker()
-    def test_should_return_created_movie_snapshots(self, mock_request):
-        self.mock_movie_api_success_response(mock_request)
+    def test_should_return_movie_snapshots_of_newly_created_movies(self, mock_request):
+        self.mock_movie_api_success_response(mock_request, "Dangal")
         response = self.test_client.post("/movies-snapshots",
                                          json={"titles": ['Dangal']},
                                          headers=authorization_header())
@@ -54,6 +54,38 @@ class MovieSnapshotResourceIntegrationTest(unittest.TestCase):
         self.assertEqual('Rotten Tomatoes', saved_movie.ratings[1].source)
         self.assertEqual('100%', saved_movie.ratings[1].value)
 
+    @requests_mock.Mocker()
+    def test_should_return_empty_movie_snapshots_when_unable_to_fetch_movie(self, mock_request):
+        self.mock_movie_api_success_response(mock_request, "Dangal")
+        self.mock_movie_api_not_found_response(mock_request, "Wanted")
+
+        response = self.test_client.post("/movies-snapshots",
+                                         json={"titles": ['Dangal', 'Wanted']},
+                                         headers=authorization_header())
+
+        expected_json = [{'director': 'Rajkumar Hirani',
+                          'ratings': [{'source': 'Internet Movie Database', 'value': '8.4/10'},
+                                      {'source': 'Rotten Tomatoes', 'value': '100%'}],
+                          'releaseDate': '25 Dec 2009',
+                          'releaseYear': '2009',
+                          'title': 'Dangal',
+                          'is_empty': False},
+                         {'director': '',
+                          'is_empty': True,
+                          'ratings': [],
+                          'releaseDate': '',
+                          'releaseYear': '',
+                          'title': 'Wanted'}]
+
+        self.assertEqual(expected_json, response.get_json())
+        self.assertEqual(201, response.status_code)
+
+        saved_movie_snapshots = MovieSnapshot.query.all()
+        self.assertEqual(1, len(saved_movie_snapshots))
+
+        saved_movie = saved_movie_snapshots[0]
+        self.assertEqual('Dangal', saved_movie.title)
+
     def test_should_get_all_movie_snapshots(self):
         ratings = Rating(source='Internet Movie Database', value='8.4/10')
         movie_snapshot = MovieSnapshot(title="3 Idiots",
@@ -76,7 +108,7 @@ class MovieSnapshotResourceIntegrationTest(unittest.TestCase):
         self.assertEqual(200, response.status_code)
         self.assertEqual(expected_json, response.get_json())
 
-    def mock_movie_api_success_response(self, mock_request):
+    def mock_movie_api_success_response(self, mock_request, title: str):
         movie_json = """
                     {
                         "Title": "Dangal",
@@ -95,4 +127,14 @@ class MovieSnapshotResourceIntegrationTest(unittest.TestCase):
                         ]
                     }
                 """
-        mock_request.get(f'http://localhost:9999/?t=Dangal&apikey=obmdb_api_key', text=movie_json)
+        mock_request.get(f'http://localhost:9999/?t={title}&apikey=obmdb_api_key', text=movie_json)
+
+    def mock_movie_api_not_found_response(self, mock_request, title: str):
+        movie_not_found_response = """
+                    {
+                        "Response": "False",
+                        "Error": "Movie not found!"
+                    }
+                """
+        mock_request.get(f'http://localhost:9999/?t={title}&apikey=obmdb_api_key', text=movie_not_found_response,
+                         status_code=404)
