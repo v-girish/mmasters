@@ -2,7 +2,7 @@ from unittest import TestCase
 from unittest.mock import patch, call
 
 from mmasters.entity.movie_snapshot import RatingEntity, MovieSnapshotEntity
-from mmasters.client.model.movie import Rating as MovieRating
+from mmasters.client.model.movie import Rating
 from mmasters.exception.exception import MovieClientException
 from mmasters.service.movie_snapshot_service import movie_snapshot_service
 from mmasters.view.movie_snapshot_view import MovieSnapshotView, RatingView, EmptyMovieSnapshotView
@@ -48,7 +48,7 @@ class MovieSnapshotServiceTest(TestCase):
             .with_release_year("2009") \
             .with_release_date("25 Dec 2009") \
             .with_director("Rajkumar Hirani") \
-            .with_ratings([MovieRating("Internet Movie Database", "8.4/10"), MovieRating("Rotten Tomatoes", "100%")]) \
+            .with_ratings([Rating("Internet Movie Database", "8.4/10"), Rating("Rotten Tomatoes", "100%")]) \
             .build()
 
         wanted_movie = MovieBuilder() \
@@ -56,7 +56,7 @@ class MovieSnapshotServiceTest(TestCase):
             .with_release_year("2008") \
             .with_release_date("27 June 2008") \
             .with_director("Timur Bekmambetov") \
-            .with_ratings([MovieRating("Internet Movie Database", "6.7/10"), MovieRating("Rotten Tomatoes", "71%")]) \
+            .with_ratings([Rating("Internet Movie Database", "6.7/10"), Rating("Rotten Tomatoes", "71%")]) \
             .build()
 
         self.movie_client.fetch.side_effect = [wanted_movie, dangal_movie]
