@@ -3,10 +3,10 @@ import unittest
 import requests_mock
 
 from mmasters.app import Application
-from mmasters.config.db_config import db
 from mmasters.entity.movie_snapshot import Rating, MovieSnapshot
 from tests.config.test_config import TestConfig
 from tests.fixture.movie_client_mock_server import MovieClientMockServer
+from tests.fixture.movie_snapshot_fixture import MovieSnapshotFixture
 
 
 def authorization_header():
@@ -22,8 +22,7 @@ class MovieSnapshotResourceIntegrationTest(unittest.TestCase):
         self.app.config['OMDB_API_KEY'] = 'obmdb_api_key'
         self.movie_client_mock_server = MovieClientMockServer('http://localhost:9999/', 'obmdb_api_key')
         self.app.app_context().push()
-        Rating.query.delete()
-        MovieSnapshot.query.delete()
+        MovieSnapshotFixture().delete_all()
 
     @requests_mock.Mocker()
     def test_should_return_movie_snapshots_of_newly_created_movies(self, mock_request):
@@ -42,7 +41,7 @@ class MovieSnapshotResourceIntegrationTest(unittest.TestCase):
         self.assertEqual(201, response.status_code)
         self.assertEqual(expected_json, response.get_json())
 
-        saved_movie_snapshots = MovieSnapshot.query.all()
+        saved_movie_snapshots = MovieSnapshotFixture.find_all()
         self.assertEqual(1, len(saved_movie_snapshots))
 
         saved_movie = saved_movie_snapshots[0]
@@ -96,8 +95,7 @@ class MovieSnapshotResourceIntegrationTest(unittest.TestCase):
                                        director='Rajkumar Hirani',
                                        ratings=[ratings])
 
-        db.session.add(movie_snapshot)
-        db.session.commit()
+        MovieSnapshotFixture.save(movie_snapshot)
 
         response = self.test_client.get("/movies-snapshots")
 
@@ -109,4 +107,3 @@ class MovieSnapshotResourceIntegrationTest(unittest.TestCase):
                           'is_empty': False}]
         self.assertEqual(200, response.status_code)
         self.assertEqual(expected_json, response.get_json())
-
