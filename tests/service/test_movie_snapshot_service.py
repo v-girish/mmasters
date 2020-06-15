@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import patch, call
 
-from mmasters.entity.movie_snapshot import Rating, MovieSnapshot
+from mmasters.entity.movie_snapshot import RatingEntity, MovieSnapshotEntity
 from mmasters.client.model.movie import Rating as MovieRating
 from mmasters.exception.exception import MovieClientException
 from mmasters.service.movie_snapshot_service import movie_snapshot_service
@@ -82,12 +82,12 @@ class MovieSnapshotServiceTest(TestCase):
         self.assertEqual([EmptyMovieSnapshotView("Wanted")], movie_snapshots)
 
     def test_should_return_all_movie_snapshots(self):
-        ratings = Rating(source='Internet Movie Database', value='8.4/10')
-        movie_snapshot = MovieSnapshot(title="Dangal",
-                                       release_year="2009",
-                                       release_date='25 Dec 2009',
-                                       director='Rajkumar Hirani',
-                                       ratings=[ratings])
+        ratings = RatingEntity(source='Internet Movie Database', value='8.4/10')
+        movie_snapshot = MovieSnapshotEntity(title="Dangal",
+                                             release_year="2009",
+                                             release_date='25 Dec 2009',
+                                             director='Rajkumar Hirani',
+                                             ratings=[ratings])
         self.movie_snapshot_repository.find_all.return_value = [movie_snapshot]
 
         actual_movie_snapshots = movie_snapshot_service.get_all()

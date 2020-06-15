@@ -3,7 +3,7 @@ import unittest
 import requests_mock
 
 from mmasters.app import Application
-from mmasters.entity.movie_snapshot import Rating, MovieSnapshot
+from mmasters.entity.movie_snapshot import RatingEntity, MovieSnapshotEntity
 from tests.config.test_config import TestConfig
 from tests.fixture.movie_client_mock_server import MovieClientMockServer
 from tests.fixture.movie_snapshot_fixture import MovieSnapshotFixture
@@ -81,19 +81,19 @@ class MovieSnapshotResourceIntegrationTest(unittest.TestCase):
         self.assertEqual(expected_json, response.get_json())
         self.assertEqual(201, response.status_code)
 
-        saved_movie_snapshots = MovieSnapshot.query.all()
+        saved_movie_snapshots = MovieSnapshotEntity.query.all()
         self.assertEqual(1, len(saved_movie_snapshots))
 
         saved_movie = saved_movie_snapshots[0]
         self.assertEqual('Dangal', saved_movie.title)
 
     def test_should_get_all_movie_snapshots(self):
-        ratings = Rating(source='Internet Movie Database', value='8.4/10')
-        movie_snapshot = MovieSnapshot(title="3 Idiots",
-                                       release_year="2009",
-                                       release_date='25 Dec 2009',
-                                       director='Rajkumar Hirani',
-                                       ratings=[ratings])
+        ratings = RatingEntity(source='Internet Movie Database', value='8.4/10')
+        movie_snapshot = MovieSnapshotEntity(title="3 Idiots",
+                                             release_year="2009",
+                                             release_date='25 Dec 2009',
+                                             director='Rajkumar Hirani',
+                                             ratings=[ratings])
 
         MovieSnapshotFixture.save(movie_snapshot)
 

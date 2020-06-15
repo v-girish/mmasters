@@ -3,7 +3,7 @@ from typing import List, Union
 
 from mmasters.client.model.movie import Movie, EmptyMovie
 from mmasters.client.movie_client import movie_client
-from mmasters.entity.movie_snapshot import MovieSnapshot
+from mmasters.entity.movie_snapshot import MovieSnapshotEntity
 from mmasters.repository.movie_snapshot_repository import movie_snapshot_repository
 from mmasters.view.movie_snapshot_view import MovieSnapshotView, EmptyMovieSnapshotView
 
@@ -24,7 +24,7 @@ class MovieSnapshotService:
         if isinstance(movie, EmptyMovie) is True:
             return EmptyMovieSnapshotView(movie.title)
 
-        movie_snapshot = MovieSnapshot.of(movie)
+        movie_snapshot = MovieSnapshotEntity.of(movie)
         movie_snapshot_repository.save(movie_snapshot)
         return movie_snapshot.to_snapshot_view()
 

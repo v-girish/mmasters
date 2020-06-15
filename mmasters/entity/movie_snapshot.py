@@ -7,30 +7,30 @@ from mmasters.config.db_config import db
 from mmasters.view.movie_snapshot_view import MovieSnapshotView, RatingView
 
 
-class MovieSnapshot(db.Model):
+class MovieSnapshotEntity(db.Model):
     __tablename__ = 'movie_snapshots'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String)
     release_year = db.Column(db.String)
     release_date = db.Column(db.String)
     director = db.Column(db.String)
-    ratings: List[Rating] = db.relationship('Rating', backref=db.backref('movie_snapshot', lazy=True))
+    ratings: List[RatingEntity] = db.relationship('RatingEntity', backref=db.backref('movie_snapshot', lazy=True))
 
     @staticmethod
-    def of(movie: Movie) -> MovieSnapshot:
-        ratings = [Rating(source=rating.source, value=rating.value) for rating in movie.ratings]
-        return MovieSnapshot(title=movie.title,
-                             release_year=movie.release_year,
-                             release_date=movie.release_date,
-                             director=movie.director,
-                             ratings=ratings)
+    def of(movie: Movie) -> MovieSnapshotEntity:
+        ratings = [RatingEntity(source=rating.source, value=rating.value) for rating in movie.ratings]
+        return MovieSnapshotEntity(title=movie.title,
+                                   release_year=movie.release_year,
+                                   release_date=movie.release_date,
+                                   director=movie.director,
+                                   ratings=ratings)
 
     def to_snapshot_view(self) -> MovieSnapshotView:
         ratings_view = [rating.to_snapshot_view() for rating in self.ratings]
         return MovieSnapshotView(self.title, self.release_year, self.release_date, self.director, ratings_view)
 
 
-class Rating(db.Model):
+class RatingEntity(db.Model):
     __tablename__ = "ratings"
     ratings_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     movie_snapshot_id = db.Column(db.Integer, db.ForeignKey('movie_snapshots.id'), nullable=False)
