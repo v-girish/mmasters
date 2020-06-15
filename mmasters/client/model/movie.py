@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import List
 
-from mmasters.view.movie_snapshot_view import MovieSnapshotView, RatingView
-
 
 class Movie:
     def __init__(self, title: str, release_year: str, release_date: str, director: str, ratings: List[Rating]):
@@ -43,6 +41,12 @@ class Movie:
                self.director == other.director and \
                self.ratings == other.ratings
 
+    def __str__(self):
+        return f"title:{self.title},release_year:{self.release_year},release_date:{self.release_date}," \
+               f"director:{self.director},ratings:{self.ratings}"
+
+    def __repr__(self):
+        return self.__str__()
 
 class Rating:
     def __init__(self, source: str, value: str):
@@ -61,6 +65,12 @@ class Rating:
     @classmethod
     def from_json(cls, json_response: dict) -> Rating:
         return Rating(json_response['Source'], json_response['Value'])
+
+    def __str__(self):
+        return f"source:{self.source},value:{self.value}"
+
+    def __repr__(self):
+        return self.__str__()
 
 
 class EmptyMovie(Movie):

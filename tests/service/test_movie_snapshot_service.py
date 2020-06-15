@@ -2,10 +2,11 @@ from unittest import TestCase
 from unittest.mock import patch, call
 
 from mmasters.entity.movie_snapshot import Rating, MovieSnapshot
+from mmasters.client.model.movie import Rating as MovieRating
 from mmasters.exception.exception import MovieClientException
 from mmasters.service.movie_snapshot_service import movie_snapshot_service
 from mmasters.view.movie_snapshot_view import MovieSnapshotView, RatingView, EmptyMovieSnapshotView
-from tests.builder import movies
+from tests.builder.movie_builder import MovieBuilder
 
 
 class MovieSnapshotServiceTest(TestCase):
@@ -32,7 +33,7 @@ class MovieSnapshotServiceTest(TestCase):
 
     def test_should_save_two_movie_snapshots_returned_from_movie_client(self):
         titles = ['Wanted', 'Dangal']
-        self.movie_client.fetch.side_effect = [movies.Wanted, movies.Dangal]
+        self.movie_client.fetch.side_effect = [MovieBuilder().build(), MovieBuilder().build()]
         self.movie_snapshot_repository.save.return_value = None
 
         movie_snapshot_service.create(titles)
@@ -42,7 +43,23 @@ class MovieSnapshotServiceTest(TestCase):
     def test_should_return_movie_snapshot_view_of_newly_fetched_movies(self):
         titles = ['Wanted', 'Dangal']
 
-        self.movie_client.fetch.side_effect = [movies.Wanted, movies.Dangal]
+        dangal_movie = MovieBuilder() \
+            .with_title("Dangal") \
+            .with_release_year("2009") \
+            .with_release_date("25 Dec 2009") \
+            .with_director("Rajkumar Hirani") \
+            .with_ratings([MovieRating("Internet Movie Database", "8.4/10"), MovieRating("Rotten Tomatoes", "100%")]) \
+            .build()
+
+        wanted_movie = MovieBuilder() \
+            .with_title("Wanted") \
+            .with_release_year("2008") \
+            .with_release_date("27 June 2008") \
+            .with_director("Timur Bekmambetov") \
+            .with_ratings([MovieRating("Internet Movie Database", "6.7/10"), MovieRating("Rotten Tomatoes", "71%")]) \
+            .build()
+
+        self.movie_client.fetch.side_effect = [wanted_movie, dangal_movie]
         self.movie_snapshot_repository.save.return_value = None
 
         movie_snapshots = movie_snapshot_service.create(titles)

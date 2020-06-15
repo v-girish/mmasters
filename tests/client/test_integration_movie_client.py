@@ -3,9 +3,10 @@ import unittest
 import requests_mock
 
 from mmasters.app import Application
+from mmasters.client.model.movie import Rating
 from mmasters.client.movie_client import movie_client
 from mmasters.exception.exception import MovieNotFoundException, MovieClientException
-from tests.builder.movies import Dangal
+from tests.builder.movie_builder import MovieBuilder
 from tests.config.test_config import TestConfig
 from tests.fixture.movie_client_mock_server import MovieClientMockServer
 
@@ -25,7 +26,15 @@ class MovieClientIntegrationTest(unittest.TestCase):
 
         actual_movie_response = movie_client.fetch('Dangal')
 
-        self.assertEqual(Dangal, actual_movie_response)
+        expected_movie = MovieBuilder() \
+            .with_title("Dangal") \
+            .with_release_year("2009") \
+            .with_release_date("25 Dec 2009") \
+            .with_director("Rajkumar Hirani") \
+            .with_ratings([Rating("Internet Movie Database", "8.4/10"), Rating("Rotten Tomatoes", "100%")]) \
+            .build()
+
+        self.assertEqual(expected_movie, actual_movie_response)
 
     @requests_mock.Mocker()
     def test_should_raise_movie_not_found_exception_when_movie_does_not_exist_with_that_title(self, mock_request):
