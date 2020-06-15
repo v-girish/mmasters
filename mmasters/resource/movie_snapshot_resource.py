@@ -1,3 +1,4 @@
+import logging
 from http import HTTPStatus
 
 from flask_restful import Resource, marshal_with, reqparse
@@ -12,11 +13,13 @@ class MovieSnapshotResource(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('titles', action='append', required=True, help="titles is a mandatory field")
+        self.logger = logging.getLogger(__name__)
 
     @marshal_with(fields=movie_snapshot_view_fields)
     @api_key_required
     def post(self):
         args = self.parser.parse_args()
+        self.logger.debug(f"Creating movie snapshots for titles {args['titles']}")
         movie_snapshots = movie_snapshot_service.create(args["titles"])
         return movie_snapshots, HTTPStatus.CREATED
 

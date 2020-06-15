@@ -6,6 +6,7 @@ from flask_restful import Api
 
 from mmasters.config.config import Config
 from mmasters.config.db_config import db
+from mmasters.config.logging_config import setup_logging
 from mmasters.resource.movie_snapshot_resource import MovieSnapshotResource
 
 
@@ -13,6 +14,8 @@ class Application:
 
     @staticmethod
     def create_app(config: Type[Config]) -> Flask:
+        setup_logging()
+
         app = Flask(__name__)
         app.config.from_object(config)
 
