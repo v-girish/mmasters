@@ -48,5 +48,5 @@ class MovieClientMockServer:
 
     def server_error_response(self, mock_request, title: str):
         mock_request.get(f'{self.__base_url}?t={title}&apikey={self.__api_key}',
-                         text="",
+                         text="Internal Server Error",
                          status_code=500)

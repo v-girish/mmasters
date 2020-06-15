@@ -1,3 +1,4 @@
+import logging
 from http import HTTPStatus
 
 import requests
@@ -10,6 +11,9 @@ from mmasters.exception.exception import MovieNotFoundException, MovieClientExce
 
 class MovieClient:
 
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
+
     def fetch_movies(self, title: str) -> Movie:
         omdb_api_key = app.config.get('OMDB_API_KEY')
         omdb_api_base_url = app.config.get('OMDB_API_BASE_URL')
@@ -20,9 +24,10 @@ class MovieClient:
 
         return Movie.from_json(response.json())
 
-    @staticmethod
-    def parse_response(response, title):
+    def parse_response(self, response, title):
+        self.logger.info(f"Received status code for movie {title} as {response.status_code}")
         if response.status_code != HTTPStatus.OK:
+            self.logger.error(f"Received error response for movie {title}: {response.text}")
             raise MovieClientException("Something went wrong")
         if response.json().get("Error") is not None:
             raise MovieNotFoundException(title)
