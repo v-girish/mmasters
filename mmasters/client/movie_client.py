@@ -14,7 +14,7 @@ class MovieClient:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    def fetch_movies(self, title: str) -> Movie:
+    def fetch(self, title: str) -> Movie:
         omdb_api_key = app.config.get('OMDB_API_KEY')
         omdb_api_base_url = app.config.get('OMDB_API_BASE_URL')
         query_params = {'t': title, 'apikey': omdb_api_key}

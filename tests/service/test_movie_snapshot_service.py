@@ -28,11 +28,11 @@ class MovieSnapshotServiceTest(TestCase):
         movie_snapshot_service.create(titles)
 
         expected_calls = [call('Wanted'), call('Dangal')]
-        self.movie_client.fetch_movies.assert_has_calls(expected_calls, any_order=True)
+        self.movie_client.fetch.assert_has_calls(expected_calls, any_order=True)
 
     def test_should_save_two_movie_snapshots_returned_from_movie_client(self):
         titles = ['Wanted', 'Dangal']
-        self.movie_client.fetch_movies.side_effect = [movies.Wanted, movies.Dangal]
+        self.movie_client.fetch.side_effect = [movies.Wanted, movies.Dangal]
         self.movie_snapshot_repository.save.return_value = None
 
         movie_snapshot_service.create(titles)
@@ -42,7 +42,7 @@ class MovieSnapshotServiceTest(TestCase):
     def test_should_return_movie_snapshot_view_of_newly_fetched_movies(self):
         titles = ['Wanted', 'Dangal']
 
-        self.movie_client.fetch_movies.side_effect = [movies.Wanted, movies.Dangal]
+        self.movie_client.fetch.side_effect = [movies.Wanted, movies.Dangal]
         self.movie_snapshot_repository.save.return_value = None
 
         movie_snapshots = movie_snapshot_service.create(titles)
@@ -57,7 +57,7 @@ class MovieSnapshotServiceTest(TestCase):
         self.assertEqual([wanted_movie_snapshot, dangal_movie_snapshot], movie_snapshots)
 
     def test_should_return_empty_movie_snapshot_when_unable_to_fetch_movie(self):
-        self.movie_client.fetch_movies.side_effect = MovieClientException("something went wrong")
+        self.movie_client.fetch.side_effect = MovieClientException("something went wrong")
         self.movie_snapshot_repository.save.return_value = None
 
         movie_snapshots = movie_snapshot_service.create(['Wanted'])

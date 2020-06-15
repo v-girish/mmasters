@@ -30,7 +30,7 @@ class MovieSnapshotService:
 
     def __fetch_movie(self, title: str) -> Movie:
         try:
-            return movie_client.fetch_movies(title)
+            return movie_client.fetch(title)
         except Exception:
             self.logger.exception(f"Error while fetching movie with title {title}")
             return EmptyMovie(title)

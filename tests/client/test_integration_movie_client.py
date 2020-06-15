@@ -23,7 +23,7 @@ class MovieClientIntegrationTest(unittest.TestCase):
     def test_should_return_a_movie(self, mock_request):
         self.movie_client_mock_server.success_response(mock_request, 'Dangal')
 
-        actual_movie_response = movie_client.fetch_movies('Dangal')
+        actual_movie_response = movie_client.fetch('Dangal')
 
         self.assertEqual(Dangal, actual_movie_response)
 
@@ -32,7 +32,7 @@ class MovieClientIntegrationTest(unittest.TestCase):
         self.movie_client_mock_server.not_found_response(mock_request, 'UnkownMovie')
 
         with self.assertRaises(MovieNotFoundException) as context:
-            movie_client.fetch_movies('UnkownMovie')
+            movie_client.fetch('UnkownMovie')
 
         self.assertEqual("Movie with title UnkownMovie not found", context.exception.message)
 
@@ -41,7 +41,7 @@ class MovieClientIntegrationTest(unittest.TestCase):
         self.movie_client_mock_server.unauthorized_response(mock_request, 'Dangal')
 
         with self.assertRaises(MovieClientException) as context:
-            movie_client.fetch_movies('Dangal')
+            movie_client.fetch('Dangal')
 
         self.assertEqual("Something went wrong", context.exception.message)
 
@@ -50,6 +50,6 @@ class MovieClientIntegrationTest(unittest.TestCase):
         self.movie_client_mock_server.server_error_response(mock_request, 'Dangal')
 
         with self.assertRaises(MovieClientException) as context:
-            movie_client.fetch_movies('Dangal')
+            movie_client.fetch('Dangal')
 
         self.assertEqual("Something went wrong", context.exception.message)
