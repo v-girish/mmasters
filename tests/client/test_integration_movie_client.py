@@ -22,7 +22,15 @@ class MovieClientIntegrationTest(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_should_return_a_movie(self, mock_request):
-        self.movie_client_mock_server.success_response(mock_request, 'Dangal')
+        dangal_movie = MovieBuilder() \
+            .with_title("Dangal") \
+            .with_release_year("2009") \
+            .with_release_date("25 Dec 2009") \
+            .with_director("Rajkumar Hirani") \
+            .with_ratings([Rating("Internet Movie Database", "8.4/10"), Rating("Rotten Tomatoes", "100%")]) \
+            .build()
+
+        self.movie_client_mock_server.success_response_with(mock_request, dangal_movie)
 
         actual_movie_response = movie_client.fetch('Dangal')
 

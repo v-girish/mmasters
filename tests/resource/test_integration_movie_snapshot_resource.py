@@ -4,7 +4,9 @@ from unittest import mock
 import requests_mock
 
 from mmasters.app import Application
+from mmasters.client.model.movie import Rating
 from mmasters.entity.movie_snapshot import RatingEntity, MovieSnapshotEntity
+from tests.builder.movie_builder import MovieBuilder
 from tests.config.test_config import TestConfig
 from tests.fixture.movie_client_mock_server import MovieClientMockServer
 from tests.fixture.movie_snapshot_fixture import MovieSnapshotFixture
@@ -19,15 +21,26 @@ class MovieSnapshotResourceIntegrationTest(unittest.TestCase):
     def setUp(self):
         self.app = Application.create_app(TestConfig)
         self.test_client = self.app.test_client()
+
         self.app.config['OMDB_API_BASE_URL'] = 'http://localhost:9999/'
         self.app.config['OMDB_API_KEY'] = 'omdb_api_key'
+
         self.movie_client_mock_server = MovieClientMockServer('http://localhost:9999/', 'omdb_api_key')
+
         self.app.app_context().push()
         MovieSnapshotFixture().delete_all()
 
     @requests_mock.Mocker()
     def test_should_return_movie_snapshots_of_newly_created_movies(self, mock_request):
-        self.movie_client_mock_server.success_response(mock_request, "Dangal")
+        dangal_movie = MovieBuilder() \
+            .with_title("Dangal") \
+            .with_release_year("2009") \
+            .with_release_date("25 Dec 2009") \
+            .with_director("Rajkumar Hirani") \
+            .with_ratings([Rating("Internet Movie Database", "8.4/10"), Rating("Rotten Tomatoes", "100%")]) \
+            .build()
+
+        self.movie_client_mock_server.success_response_with(mock_request, dangal_movie)
         response = self.test_client.post("/movies-snapshots",
                                          json={"titles": ['Dangal']},
                                          headers=authorization_header())
@@ -65,7 +78,15 @@ class MovieSnapshotResourceIntegrationTest(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_should_return_empty_movie_snapshots_when_unable_to_fetch_movie(self, mock_request):
-        self.movie_client_mock_server.success_response(mock_request, "Dangal")
+        dangal_movie = MovieBuilder() \
+            .with_title("Dangal") \
+            .with_release_year("2009") \
+            .with_release_date("25 Dec 2009") \
+            .with_director("Rajkumar Hirani") \
+            .with_ratings([Rating("Internet Movie Database", "8.4/10"), Rating("Rotten Tomatoes", "100%")]) \
+            .build()
+
+        self.movie_client_mock_server.success_response_with(mock_request, dangal_movie)
         self.movie_client_mock_server.not_found_response(mock_request, "Wanted")
 
         response = self.test_client.post("/movies-snapshots",
