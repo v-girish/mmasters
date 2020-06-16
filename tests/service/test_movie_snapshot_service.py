@@ -2,10 +2,10 @@ from unittest import TestCase
 from unittest.mock import patch, call
 
 from mmasters.entity.movie_snapshot import RatingEntity, MovieSnapshotEntity
-from mmasters.client.model.movie import Rating
 from mmasters.exception.exception import MovieClientException
 from mmasters.service.movie_snapshot_service import movie_snapshot_service
-from mmasters.view.movie_snapshot_view import MovieSnapshotView, RatingView, EmptyMovieSnapshotView
+from mmasters.view.movie_snapshot_view import MovieSnapshotView, EmptyMovieSnapshotView
+from mmasters.view.rating_view import RatingView
 from tests.builder.movie_builder import MovieBuilder
 
 
@@ -34,44 +34,32 @@ class MovieSnapshotServiceTest(TestCase):
     def test_should_save_two_movie_snapshots_returned_from_movie_client(self):
         titles = ['Wanted', 'Dangal']
         self.movie_client.fetch.side_effect = [MovieBuilder().build(), MovieBuilder().build()]
-        self.movie_snapshot_repository.save.return_value = None
+        self.movie_snapshot_repository.save.side_effect = [MovieSnapshotEntity(), MovieSnapshotEntity()]
 
         movie_snapshot_service.create(titles)
 
         self.assertEqual(2, self.movie_snapshot_repository.save.call_count)
 
     def test_should_return_movie_snapshot_view_of_newly_fetched_movies(self):
-        titles = ['Wanted', 'Dangal']
+        wanted_movie = MovieBuilder().with_title("Wanted").build()
 
-        dangal_movie = MovieBuilder() \
-            .with_title("Dangal") \
-            .with_release_year("2009") \
-            .with_release_date("25 Dec 2009") \
-            .with_director("Rajkumar Hirani") \
-            .with_ratings([Rating("Internet Movie Database", "8.4/10"), Rating("Rotten Tomatoes", "100%")]) \
-            .build()
+        self.movie_client.fetch.side_effect = [wanted_movie]
 
-        wanted_movie = MovieBuilder() \
-            .with_title("Wanted") \
-            .with_release_year("2008") \
-            .with_release_date("27 June 2008") \
-            .with_director("Timur Bekmambetov") \
-            .with_ratings([Rating("Internet Movie Database", "6.7/10"), Rating("Rotten Tomatoes", "71%")]) \
-            .build()
+        wanted_movie_snapshot = MovieSnapshotEntity(id=1, title="Wanted", release_year="2008",
+                                                    release_date="27 June 2008", director="Timur Bekmambetov",
+                                                    ratings=[
+                                                        RatingEntity(source="Internet Movie Database", value="6.7/10"),
+                                                        RatingEntity(source="Rotten Tomatoes", value="71%")])
 
-        self.movie_client.fetch.side_effect = [wanted_movie, dangal_movie]
-        self.movie_snapshot_repository.save.return_value = None
+        self.movie_snapshot_repository.save.side_effect = [wanted_movie_snapshot]
 
-        movie_snapshots = movie_snapshot_service.create(titles)
+        movie_snapshots = movie_snapshot_service.create(['Wanted'])
 
-        wanted_movie_snapshot = MovieSnapshotView("Wanted", "2008", "27 June 2008", "Timur Bekmambetov",
-                                                  ratings_view=[RatingView("Internet Movie Database", "6.7/10"),
-                                                                RatingView("Rotten Tomatoes", "71%")])
+        wanted_movie_snapshot_view = MovieSnapshotView(1, "Wanted", "2008", "27 June 2008", "Timur Bekmambetov",
+                                                       ratings_view=[RatingView("Internet Movie Database", "6.7/10"),
+                                                                     RatingView("Rotten Tomatoes", "71%")])
 
-        dangal_movie_snapshot = MovieSnapshotView("Dangal", "2009", "25 Dec 2009", "Rajkumar Hirani",
-                                                  ratings_view=[RatingView("Internet Movie Database", "8.4/10"),
-                                                                RatingView("Rotten Tomatoes", "100%")])
-        self.assertEqual([wanted_movie_snapshot, dangal_movie_snapshot], movie_snapshots)
+        self.assertEqual([wanted_movie_snapshot_view], movie_snapshots)
 
     def test_should_return_empty_movie_snapshot_when_unable_to_fetch_movie(self):
         self.movie_client.fetch.side_effect = MovieClientException("something went wrong")
@@ -84,6 +72,7 @@ class MovieSnapshotServiceTest(TestCase):
     def test_should_return_all_movie_snapshots(self):
         ratings = RatingEntity(source='Internet Movie Database', value='8.4/10')
         movie_snapshot = MovieSnapshotEntity(title="Dangal",
+                                             id=1,
                                              release_year="2009",
                                              release_date='25 Dec 2009',
                                              director='Rajkumar Hirani',
@@ -92,7 +81,7 @@ class MovieSnapshotServiceTest(TestCase):
 
         actual_movie_snapshots = movie_snapshot_service.get_all()
 
-        expected_movie_snapshots = [MovieSnapshotView("Dangal", "2009", "25 Dec 2009", "Rajkumar Hirani",
+        expected_movie_snapshots = [MovieSnapshotView(1, "Dangal", "2009", "25 Dec 2009", "Rajkumar Hirani",
                                                       ratings_view=[RatingView("Internet Movie Database", "8.4/10")])]
 
         self.assertEqual(expected_movie_snapshots, actual_movie_snapshots)

@@ -1,4 +1,5 @@
 import unittest
+from unittest import mock
 
 import requests_mock
 
@@ -31,13 +32,20 @@ class MovieSnapshotResourceIntegrationTest(unittest.TestCase):
                                          json={"titles": ['Dangal']},
                                          headers=authorization_header())
 
-        expected_json = [{'director': 'Rajkumar Hirani',
-                          'ratings': [{'source': 'Internet Movie Database', 'value': '8.4/10'},
-                                      {'source': 'Rotten Tomatoes', 'value': '100%'}],
-                          'releaseDate': '25 Dec 2009',
-                          'releaseYear': '2009',
-                          'title': 'Dangal',
-                          'is_empty': False}]
+        expected_json = [
+            {
+                'director': 'Rajkumar Hirani',
+                'ratings': [
+                    {'source': 'Internet Movie Database', 'value': '8.4/10'},
+                    {'source': 'Rotten Tomatoes', 'value': '100%'}
+                ],
+                'releaseDate': '25 Dec 2009',
+                'releaseYear': '2009',
+                'title': 'Dangal',
+                'id': mock.ANY,
+                'is_empty': False
+            }
+        ]
         self.assertEqual(201, response.status_code)
         self.assertEqual(expected_json, response.get_json())
 
@@ -64,24 +72,28 @@ class MovieSnapshotResourceIntegrationTest(unittest.TestCase):
                                          json={"titles": ['Dangal', 'Wanted']},
                                          headers=authorization_header())
 
-        expected_json = [{'director': 'Rajkumar Hirani',
-                          'ratings': [{'source': 'Internet Movie Database', 'value': '8.4/10'},
-                                      {'source': 'Rotten Tomatoes', 'value': '100%'}],
-                          'releaseDate': '25 Dec 2009',
-                          'releaseYear': '2009',
-                          'title': 'Dangal',
-                          'is_empty': False},
-                         {'director': '',
-                          'is_empty': True,
-                          'ratings': [],
-                          'releaseDate': '',
-                          'releaseYear': '',
-                          'title': 'Wanted'}]
+        expected_json = [
+            {
+                'director': 'Rajkumar Hirani',
+                'ratings': [
+                    {'source': 'Internet Movie Database', 'value': '8.4/10'},
+                    {'source': 'Rotten Tomatoes', 'value': '100%'}],
+                'releaseDate': '25 Dec 2009',
+                'releaseYear': '2009',
+                'title': 'Dangal',
+                'id': mock.ANY,
+                'is_empty': False
+            },
+            {
+                'is_empty': True,
+                'title': 'Wanted'
+            }
+        ]
 
         self.assertEqual(expected_json, response.get_json())
         self.assertEqual(201, response.status_code)
 
-        saved_movie_snapshots = MovieSnapshotEntity.query.all()
+        saved_movie_snapshots = MovieSnapshotFixture.find_all()
         self.assertEqual(1, len(saved_movie_snapshots))
 
         saved_movie = saved_movie_snapshots[0]
@@ -99,11 +111,16 @@ class MovieSnapshotResourceIntegrationTest(unittest.TestCase):
 
         response = self.test_client.get("/movies-snapshots")
 
-        expected_json = [{'director': 'Rajkumar Hirani',
-                          'ratings': [{'source': 'Internet Movie Database', 'value': '8.4/10'}],
-                          'releaseDate': '25 Dec 2009',
-                          'releaseYear': '2009',
-                          'title': '3 Idiots',
-                          'is_empty': False}]
+        expected_json = [
+            {
+                'director': 'Rajkumar Hirani',
+                'ratings': [{'source': 'Internet Movie Database', 'value': '8.4/10'}],
+                'releaseDate': '25 Dec 2009',
+                'releaseYear': '2009',
+                'title': '3 Idiots',
+                'id': mock.ANY,
+                'is_empty': False
+            }
+        ]
         self.assertEqual(200, response.status_code)
         self.assertEqual(expected_json, response.get_json())

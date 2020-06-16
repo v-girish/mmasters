@@ -4,7 +4,8 @@ from typing import List
 
 from mmasters.client.model.movie import Movie
 from mmasters.config.db_config import db
-from mmasters.view.movie_snapshot_view import MovieSnapshotView, RatingView
+from mmasters.view.movie_snapshot_view import MovieSnapshotView
+from mmasters.view.rating_view import RatingView
 
 
 class MovieSnapshotEntity(db.Model):
@@ -27,7 +28,7 @@ class MovieSnapshotEntity(db.Model):
 
     def to_snapshot_view(self) -> MovieSnapshotView:
         ratings_view = [rating.to_snapshot_view() for rating in self.ratings]
-        return MovieSnapshotView(self.title, self.release_year, self.release_date, self.director, ratings_view)
+        return MovieSnapshotView(self.id, self.title, self.release_year, self.release_date, self.director, ratings_view)
 
 
 class RatingEntity(db.Model):

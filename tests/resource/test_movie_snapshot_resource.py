@@ -29,20 +29,22 @@ class MovieSnapshotResourceTest(unittest.TestCase):
         self.assertEqual(201, response.status_code)
 
     def test_should_return_movie_snapshots_that_are_newly_created(self):
-        self.movie_snapshot_service.create.return_value = [MovieSnapshotViewBuilder().with_title("3 Idiots").build()]
+        self.movie_snapshot_service.create.return_value = [MovieSnapshotViewBuilder()
+                                                               .with_title("3 Idiots")
+                                                               .with_snapshot_id(1).build()]
 
         response = self.test_client.post("/movies-snapshots",
                                          json={"titles": ['3 Idiots']},
                                          headers=authorization_header())
 
         expected_json = [{'director': 'Timur Bekmambetov',
+                          'is_empty': False,
                           'ratings': [{'source': 'Internet Movie Database', 'value': '6.7/10'},
                                       {'source': 'Rotten Tomatoes', 'value': '71%'}],
                           'releaseDate': '27 June 2008',
                           'releaseYear': '2008',
-                          'title': '3 Idiots',
-                          'is_empty': False
-                          }]
+                          'id': 1,
+                          'title': '3 Idiots'}]
         self.assertEqual(expected_json, response.get_json())
 
     def test_should_create_movie_snapshots_with_titles_passed_as_payload(self):
@@ -102,8 +104,11 @@ class MovieSnapshotResourceTest(unittest.TestCase):
 
         self.assertEqual(200, response.status_code)
 
-    def test_should_return_movie_snapshots_in_response_body_for_get_request_for_movie_snapshots(self):
-        self.movie_snapshot_service.get_all.return_value = [MovieSnapshotViewBuilder().with_title("3 Idiots").build()]
+    def test_should_return_all_movie_snapshots_in_response_body(self):
+        self.movie_snapshot_service.get_all.return_value = [MovieSnapshotViewBuilder()
+                                                                .with_title("3 Idiots")
+                                                                .with_snapshot_id(1)
+                                                                .build()]
 
         response = self.test_client.get("/movies-snapshots")
 
@@ -113,7 +118,7 @@ class MovieSnapshotResourceTest(unittest.TestCase):
                           "releaseDate": "27 June 2008",
                           "releaseYear": "2008",
                           "title": "3 Idiots",
+                          "id": 1,
                           'is_empty': False}]
 
         self.assertEqual(expected_json, response.get_json())
-
