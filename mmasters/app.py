@@ -4,7 +4,7 @@ from flask import Flask
 from flask_migrate import Migrate
 
 from mmasters.config.config import Config
-from mmasters.config.db_config import db
+from mmasters.config.database import db
 from mmasters.config.endpoints import Endpoints
 from mmasters.config.logging_config import setup_logging
 

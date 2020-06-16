@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import List
 
 from mmasters.client.model.movie import Movie
-from mmasters.config.db_config import db
+from mmasters.config.database import db
 from mmasters.view.movie_snapshot_view import MovieSnapshotView
 from mmasters.view.rating_view import RatingView
 
