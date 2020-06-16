@@ -16,9 +16,9 @@ class MovieClientIntegrationTest(unittest.TestCase):
     def setUp(self) -> None:
         self.app = Application.create_app(TestConfig)
         self.app.config['OMDB_API_BASE_URL'] = 'http://localhost:9999/'
-        self.app.config['OMDB_API_KEY'] = 'obmdb_api_key'
+        self.app.config['OMDB_API_KEY'] = 'omdb_api_key'
         self.app.app_context().push()
-        self.movie_client_mock_server = MovieClientMockServer('http://localhost:9999/', 'obmdb_api_key')
+        self.movie_client_mock_server = MovieClientMockServer('http://localhost:9999/', 'omdb_api_key')
 
     @requests_mock.Mocker()
     def test_should_return_a_movie(self, mock_request):

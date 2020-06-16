@@ -19,8 +19,8 @@ class MovieSnapshotResourceIntegrationTest(unittest.TestCase):
         self.app = Application.create_app(TestConfig)
         self.test_client = self.app.test_client()
         self.app.config['OMDB_API_BASE_URL'] = 'http://localhost:9999/'
-        self.app.config['OMDB_API_KEY'] = 'obmdb_api_key'
-        self.movie_client_mock_server = MovieClientMockServer('http://localhost:9999/', 'obmdb_api_key')
+        self.app.config['OMDB_API_KEY'] = 'omdb_api_key'
+        self.movie_client_mock_server = MovieClientMockServer('http://localhost:9999/', 'omdb_api_key')
         self.app.app_context().push()
         MovieSnapshotFixture().delete_all()
 
