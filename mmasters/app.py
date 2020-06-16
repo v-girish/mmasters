@@ -16,14 +16,30 @@ class Application:
     def create_app(config: Type[Config]) -> Flask:
         setup_logging()
 
-        app = Flask(__name__)
-        app.config.from_object(config)
+        app = Application.initialize_app()
 
-        api = Api(app)
+        Application.configure(app, config)
 
-        api.add_resource(MovieSnapshotResource, '/movies-snapshots')
+        Application.add_resources(app)
 
-        db.init_app(app)
-        Migrate(app, db)
+        Application.setup_database(app)
 
         return app
+
+    @staticmethod
+    def initialize_app():
+        return Flask(__name__)
+
+    @staticmethod
+    def configure(app, config):
+        app.config.from_object(config)
+
+    @staticmethod
+    def add_resources(app):
+        api = Api(app)
+        api.add_resource(MovieSnapshotResource, '/movies-snapshots')
+
+    @staticmethod
+    def setup_database(app):
+        db.init_app(app)
+        Migrate(app, db)
