@@ -42,6 +42,14 @@ As a part of the system
 - get all movie snapshots from the system
 - and needless to say, ensure that the system is properly tested
 
+### Installing dependencies
+```shell script
+brew install pipenv
+cd <to_project_root_folder>
+pipenv install
+pipenv shell #(to activate virtualenv)
+```
+
 ### Running Migrations
 ```shell script
 export FLASK_APP='run_app.py'
@@ -54,5 +62,10 @@ export API_KEY='<private api key>'
 export OMDB_API_KEY='<your omdb api key>'
 export FLASK_APP='run_app.py'
 flask run
+```
+
+### Running the Tests
+```shell script
+python -m pytest tests/
 ```
 
