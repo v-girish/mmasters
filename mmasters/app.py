@@ -2,12 +2,11 @@ from typing import Type
 
 from flask import Flask
 from flask_migrate import Migrate
-from flask_restful import Api
 
 from mmasters.config.config import Config
 from mmasters.config.db_config import db
+from mmasters.config.endpoints import Endpoints
 from mmasters.config.logging_config import setup_logging
-from mmasters.resource.movie_snapshot_resource import MovieSnapshotResource
 
 
 class Application:
@@ -36,8 +35,7 @@ class Application:
 
     @staticmethod
     def add_resources(app):
-        api = Api(app)
-        api.add_resource(MovieSnapshotResource, '/movies-snapshots')
+        Endpoints(app).add()
 
     @staticmethod
     def setup_database(app):
