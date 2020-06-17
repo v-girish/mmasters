@@ -20,9 +20,10 @@ class MovieSnapshotResource(Resource):
     @marshal_with(MovieSnapshotCreationResponse.json_fields)
     def post(self):
         args = self.parser.parse_args()
-        self.logger.debug(f"Creating movie snapshots for titles {args['titles']}")
+        titles = args['titles']
+        self.logger.debug(f"Creating movie snapshots for titles {titles}")
 
-        movie_creation_response = movie_snapshot_service.create(args["titles"])
+        movie_creation_response = movie_snapshot_service.create(titles)
 
         return movie_creation_response, HTTPStatus.CREATED
 

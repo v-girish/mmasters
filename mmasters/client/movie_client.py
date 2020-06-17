@@ -14,16 +14,15 @@ class MovieClient:
         self.logger = logging.getLogger(__name__)
 
     def fetch(self, title: str) -> Movie:
-        omdb_api_base_url = app.config.get('OMDB_API_BASE_URL')
-
         try:
-            response = self.__make_request(omdb_api_base_url, title)
+            response = self.__make_request(title)
             return MovieResponse(title, response).movie()
         except requests.exceptions.RequestException:
             self.logger.exception(f"Error while making request to fetch movie: {title}")
             return EmptyMovie(title)
 
-    def __make_request(self, omdb_api_base_url, title):
+    def __make_request(self, title):
+        omdb_api_base_url = app.config.get('OMDB_API_BASE_URL')
         response = requests.get(omdb_api_base_url, params=self.__query_params(title))
         response.raise_for_status()
         return response

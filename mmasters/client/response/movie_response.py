@@ -14,10 +14,8 @@ class MovieResponse:
         self.logger = logging.getLogger(__name__)
 
     def movie(self) -> Movie:
-        self.logger.info(f"Received status code for movie {self.__title} as {self.__response.status_code}")
-
         if self.__is_not_found_response():
-            self.logger.error(f"Received error response for movie {self.__title}: {self.__response.text}")
+            self.logger.error(f"Movie with title {self.__title} does not exist in omdb")
             return EmptyMovie(self.__title)
 
         return Movie.from_json(self.__response.json())
