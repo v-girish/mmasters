@@ -16,14 +16,11 @@ class MovieResponse:
     def movie(self) -> Movie:
         self.logger.info(f"Received status code for movie {self.__title} as {self.__response.status_code}")
 
-        if self.__is_not_success_response() or self.__is_not_found_response():
+        if self.__is_not_found_response():
             self.logger.error(f"Received error response for movie {self.__title}: {self.__response.text}")
             return EmptyMovie(self.__title)
 
         return Movie.from_json(self.__response.json())
-
-    def __is_not_success_response(self) -> bool:
-        return self.__response.status_code != HTTPStatus.OK
 
     def __is_not_found_response(self) -> bool:
         return self.__response.json().get("Error") is not None
