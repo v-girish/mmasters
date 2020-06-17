@@ -17,6 +17,8 @@ class SavedMovieSnapshot:
     @property
     def title(self): return self.__title
 
+    def is_failed(self) -> bool: return False
+
     def __str__(self) -> str:
         return f"{{Id: {self.__id}, Title:{self.__title}}}"
 

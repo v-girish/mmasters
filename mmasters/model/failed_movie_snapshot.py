@@ -6,11 +6,13 @@ class FailedMovieSnapshot:
         'title': fields.String,
     }
 
+    def __init__(self, title: str):
+        self.__title = title
+
     @property
     def title(self): return self.__title
 
-    def __init__(self, title: str):
-        self.__title = title
+    def is_failed(self) -> bool: return True
 
     def __str__(self) -> str:
         return f"{{Title:{self.__title}}}"

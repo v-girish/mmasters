@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, Union
 
 from mmasters.client.model.movie import Movie, EmptyMovie
 from mmasters.client.movie_client import movie_client
@@ -16,20 +16,18 @@ class MovieSnapshotService:
         self.logger = logging.getLogger(__name__)
 
     def create(self, titles: List[str]) -> MovieSnapshotCreationResponse:
-        saved_snapshots = []
-        failed_snapshots = []
+        movie_snapshot_creation_response = MovieSnapshotCreationResponse()
 
         for title in titles:
             movie = self.__fetch_movie(title)
-            if movie.is_empty():
-                failed_snapshots.append(FailedMovieSnapshot(movie.title))
-            else:
-                saved_snapshots.append(self.__save(movie))
+            movie_snapshot_creation_response.add_snapshot(self.__save(movie))
 
-        return MovieSnapshotCreationResponse(saved_snapshots=saved_snapshots,
-                                             failed_snapshots=failed_snapshots)
+        return movie_snapshot_creation_response
 
-    def __save(self, movie) -> SavedMovieSnapshot:
+    def __save(self, movie: Movie) -> Union[SavedMovieSnapshot, FailedMovieSnapshot]:
+        if movie.is_empty():
+            return FailedMovieSnapshot(movie.title)
+
         movie_snapshot = movie_snapshot_repository.save(MovieSnapshotEntity.of(movie))
         return movie_snapshot.to_saved_snapshot()
 
