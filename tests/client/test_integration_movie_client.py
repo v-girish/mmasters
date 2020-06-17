@@ -3,9 +3,8 @@ import unittest
 import requests_mock
 
 from mmasters.app import Application
-from mmasters.client.model.movie import Rating
+from mmasters.client.model.movie import Rating, EmptyMovie
 from mmasters.client.movie_client import movie_client
-from mmasters.exception.exception import MovieNotFoundException, MovieClientException
 from tests.builder.movie_builder import MovieBuilder
 from tests.config.test_config import TestConfig
 from tests.fixture.movie_client_mock_server import MovieClientMockServer
@@ -45,28 +44,31 @@ class MovieClientIntegrationTest(unittest.TestCase):
         self.assertEqual(expected_movie, actual_movie_response)
 
     @requests_mock.Mocker()
-    def test_should_raise_movie_not_found_exception_when_movie_does_not_exist_with_that_title(self, mock_request):
+    def test_should_return_empty_movie_when_movie_does_not_exist_with_that_title(self, mock_request):
         self.movie_client_mock_server.not_found_response(mock_request, 'UnkownMovie')
 
-        with self.assertRaises(MovieNotFoundException) as context:
-            movie_client.fetch('UnkownMovie')
+        movie = movie_client.fetch('UnkownMovie')
 
-        self.assertEqual("Movie with title UnkownMovie not found", context.exception.message)
+        expected_movie = EmptyMovie("UnkownMovie")
+
+        self.assertEqual(expected_movie, movie)
 
     @requests_mock.Mocker()
-    def test_should_raise_movie_client_exception_when_api_response_is_unauthorized(self, mock_request):
+    def test_should_return_empty_movie_when_api_response_is_unauthorized(self, mock_request):
         self.movie_client_mock_server.unauthorized_response(mock_request, 'Dangal')
 
-        with self.assertRaises(MovieClientException) as context:
-            movie_client.fetch('Dangal')
+        movie = movie_client.fetch('Dangal')
 
-        self.assertEqual("Something went wrong", context.exception.message)
+        expected_movie = EmptyMovie("Dangal")
+
+        self.assertEqual(expected_movie, movie)
 
     @requests_mock.Mocker()
-    def test_should_raise_movie_client_exception_when_api_response_is_internal_server_error(self, mock_request):
+    def test_should_return_empty_movie_when_api_response_is_internal_server_error(self, mock_request):
         self.movie_client_mock_server.server_error_response(mock_request, 'Dangal')
 
-        with self.assertRaises(MovieClientException) as context:
-            movie_client.fetch('Dangal')
+        movie = movie_client.fetch('Dangal')
 
-        self.assertEqual("Something went wrong", context.exception.message)
+        expected_movie = EmptyMovie("Dangal")
+
+        self.assertEqual(expected_movie, movie)

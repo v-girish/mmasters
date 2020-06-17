@@ -19,7 +19,7 @@ class MovieSnapshotService:
         movie_snapshot_creation_response = MovieSnapshotCreationResponse()
 
         for title in titles:
-            movie = self.__fetch_movie(title)
+            movie = movie_client.fetch(title)
             movie_snapshot_creation_response.add_snapshot(self.__save(movie))
 
         return movie_snapshot_creation_response
@@ -30,13 +30,6 @@ class MovieSnapshotService:
 
         movie_snapshot = movie_snapshot_repository.save(MovieSnapshotEntity.of(movie))
         return movie_snapshot.to_saved_snapshot()
-
-    def __fetch_movie(self, title: str) -> Movie:
-        try:
-            return movie_client.fetch(title)
-        except Exception:
-            self.logger.exception(f"Error while fetching movie with title {title}")
-            return EmptyMovie(title)
 
     def get_all(self) -> List[MovieSnapshotView]:
         movie_snapshots = movie_snapshot_repository.find_all()

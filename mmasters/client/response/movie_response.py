@@ -3,7 +3,7 @@ from http import HTTPStatus
 
 import requests
 
-from mmasters.client.model.movie import Movie
+from mmasters.client.model.movie import Movie, EmptyMovie
 from mmasters.exception.exception import MovieClientException, MovieNotFoundException
 
 
@@ -15,7 +15,12 @@ class MovieResponse:
         self.logger = logging.getLogger(__name__)
 
     def movie(self) -> Movie:
-        self.__parse()
+        try:
+            self.__parse()
+        except Exception:
+            self.logger.exception(f"Error while fetching movie with title {self.__title}")
+            return EmptyMovie(self.__title)
+
         return Movie.from_json(self.__response.json())
 
     def __parse(self):

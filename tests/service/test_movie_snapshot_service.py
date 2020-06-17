@@ -1,13 +1,13 @@
 from unittest import TestCase
 from unittest.mock import patch, call
 
+from mmasters.client.model.movie import EmptyMovie
 from mmasters.entity.movie_snapshot import RatingEntity, MovieSnapshotEntity
-from mmasters.exception.exception import MovieClientException
+from mmasters.model.movie_snapshot_creation_response import MovieSnapshotCreationResponse, SavedMovieSnapshot, \
+    FailedMovieSnapshot
 from mmasters.service.movie_snapshot_service import movie_snapshot_service
 from mmasters.view.movie_snapshot_view import MovieSnapshotView
 from mmasters.view.rating_view import RatingView
-from mmasters.model.movie_snapshot_creation_response import MovieSnapshotCreationResponse, SavedMovieSnapshot, \
-    FailedMovieSnapshot
 from tests.builder.movie_builder import MovieBuilder
 
 
@@ -61,8 +61,8 @@ class MovieSnapshotServiceTest(TestCase):
 
         self.assertEqual(expected_response, movie_snapshot_creation_response)
 
-    def test_should_return_movie_snapshot_creation_response_given_an_error_while_fetching_movie(self):
-        self.movie_client.fetch.side_effect = MovieClientException("something went wrong")
+    def test_should_return_response_with_failed_movie_snapshots(self):
+        self.movie_client.fetch.return_value = EmptyMovie("Wanted")
         self.movie_snapshot_repository.save.return_value = None
 
         movie_snapshot_creation_response = movie_snapshot_service.create(['Wanted'])
@@ -72,10 +72,10 @@ class MovieSnapshotServiceTest(TestCase):
 
         self.assertEqual(expected_response, movie_snapshot_creation_response)
 
-    def test_should_return_movie_snapshot_creation_response_with_one_saved_snapshot_and_one_failed_snapshot(self):
+    def test_should_return_response_with_one_saved_snapshot_and_one_failed_snapshot(self):
         wanted_movie = MovieBuilder().with_title("Wanted").build()
 
-        self.movie_client.fetch.side_effect = [wanted_movie, MovieClientException("something went wrong")]
+        self.movie_client.fetch.side_effect = [wanted_movie, EmptyMovie("Dangal")]
 
         wanted_movie_snapshot = MovieSnapshotEntity(id=1, title="Wanted", release_year="2008",
                                                     release_date="27 June 2008", director="Timur Bekmambetov",
