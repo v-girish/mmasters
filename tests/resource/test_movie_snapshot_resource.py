@@ -2,7 +2,10 @@ import unittest
 from unittest.mock import patch
 
 from mmasters.app import Application
+from mmasters.model.failed_movie_snapshot import FailedMovieSnapshot
+from mmasters.model.movie_snapshot_creation_response import SavedMovieSnapshot
 from tests.builder.movie_snapshot_view_builder import MovieSnapshotViewBuilder
+from tests.builder.movie_snapshot_creation_response_builder import MovieSnapshotCreationResponseBuilder
 from tests.config.test_config import TestConfig
 
 
@@ -29,26 +32,48 @@ class MovieSnapshotResourceTest(unittest.TestCase):
         self.assertEqual(201, response.status_code)
 
     def test_should_return_movie_snapshots_that_are_newly_created(self):
-        self.movie_snapshot_service.create.return_value = [MovieSnapshotViewBuilder()
-                                                               .with_title("3 Idiots")
-                                                               .with_snapshot_id(1).build()]
+        self.movie_snapshot_service.create.return_value = MovieSnapshotCreationResponseBuilder()\
+                                                        .add_saved_snapshot(SavedMovieSnapshot(1, "3 Idiots"))\
+                                                        .build()
 
         response = self.test_client.post("/movies-snapshots",
                                          json={"titles": ['3 Idiots']},
                                          headers=authorization_header())
 
-        expected_json = [{'director': 'Timur Bekmambetov',
-                          'is_empty': False,
-                          'ratings': [{'source': 'Internet Movie Database', 'value': '6.7/10'},
-                                      {'source': 'Rotten Tomatoes', 'value': '71%'}],
-                          'releaseDate': '27 June 2008',
-                          'releaseYear': '2008',
-                          'id': 1,
-                          'title': '3 Idiots'}]
+        expected_json = {
+            "saved_snapshots": [{
+                    'id': 1,
+                    'title': '3 Idiots'
+                }],
+            "failed_snapshots": []
+        }
+        self.assertEqual(expected_json, response.get_json())
+
+    def test_should_return_movie_snapshots_with_failed_snapshots(self):
+        self.movie_snapshot_service.create.return_value = MovieSnapshotCreationResponseBuilder()\
+                                                        .add_saved_snapshot(SavedMovieSnapshot(1, "3 Idiots"))\
+                                                        .add_failed_snapshot(FailedMovieSnapshot("Dangal"))\
+                                                        .build()
+
+        response = self.test_client.post("/movies-snapshots",
+                                         json={"titles": ['3 Idiots', "Dangal"]},
+                                         headers=authorization_header())
+
+        expected_json = {
+            "saved_snapshots": [{
+                    'id': 1,
+                    'title': '3 Idiots'
+                }],
+            "failed_snapshots": [{
+                "title": "Dangal"
+            }]
+        }
         self.assertEqual(expected_json, response.get_json())
 
     def test_should_create_movie_snapshots_with_titles_passed_as_payload(self):
-        self.movie_snapshot_service.create.return_value = [MovieSnapshotViewBuilder().with_title("3 Idiots").build()]
+        self.movie_snapshot_service.create.return_value = MovieSnapshotCreationResponseBuilder()\
+                                                            .add_saved_snapshot(SavedMovieSnapshot(1, "3 Idiots"))\
+                                                            .build()
 
         self.test_client.post("/movies-snapshots",
                               json={"titles": ['3 Idiots']},
@@ -57,7 +82,9 @@ class MovieSnapshotResourceTest(unittest.TestCase):
         self.movie_snapshot_service.create.assert_called_with(['3 Idiots'])
 
     def test_should_return_bad_request_as_status_when_titles_is_missing_in_payload(self):
-        self.movie_snapshot_service.create.return_value = [MovieSnapshotViewBuilder().with_title("3 Idiots").build()]
+        self.movie_snapshot_service.create.return_value = MovieSnapshotCreationResponseBuilder()\
+                                                            .add_saved_snapshot(SavedMovieSnapshot(1, "3 Idiots"))\
+                                                            .build()
 
         response = self.test_client.post("/movies-snapshots",
                                          json={},
@@ -66,7 +93,9 @@ class MovieSnapshotResourceTest(unittest.TestCase):
         self.assertEqual(400, response.status_code)
 
     def test_should_return_bad_request_as_status_when_titles_is_empty_list_in_payload(self):
-        self.movie_snapshot_service.create.return_value = [MovieSnapshotViewBuilder().with_title("3 Idiots").build()]
+        self.movie_snapshot_service.create.return_value = MovieSnapshotCreationResponseBuilder()\
+                                                            .add_saved_snapshot(SavedMovieSnapshot(1, "3 Idiots"))\
+                                                            .build()
 
         response = self.test_client.post("/movies-snapshots",
                                          json={'titles': []},
@@ -75,7 +104,9 @@ class MovieSnapshotResourceTest(unittest.TestCase):
         self.assertEqual(400, response.status_code)
 
     def test_should_return_error_message_in_response_when_titles_is_missing_in_payload(self):
-        self.movie_snapshot_service.create.return_value = [MovieSnapshotViewBuilder().with_title("3 Idiots").build()]
+        self.movie_snapshot_service.create.return_value = MovieSnapshotCreationResponseBuilder()\
+                                                            .add_saved_snapshot(SavedMovieSnapshot(1, "3 Idiots"))\
+                                                            .build()
 
         response = self.test_client.post("/movies-snapshots",
                                          json={},

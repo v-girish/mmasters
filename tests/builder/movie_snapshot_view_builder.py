@@ -21,7 +21,7 @@ class MovieSnapshotViewBuilder:
         return self
 
     def build(self) -> MovieSnapshotView:
-        return MovieSnapshotView(snapshot_id = self.__snapshot_id, title=self.__title,
+        return MovieSnapshotView(snapshot_id=self.__snapshot_id, title=self.__title,
                                  release_year=self.__release_year,
                                  release_date=self.__release_date,
                                  director=self.__director,

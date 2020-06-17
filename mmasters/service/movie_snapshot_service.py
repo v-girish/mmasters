@@ -5,7 +5,9 @@ from mmasters.client.model.movie import Movie, EmptyMovie
 from mmasters.client.movie_client import movie_client
 from mmasters.entity.movie_snapshot import MovieSnapshotEntity
 from mmasters.repository.movie_snapshot_repository import movie_snapshot_repository
-from mmasters.view.movie_snapshot_view import MovieSnapshotView, EmptyMovieSnapshotView, AbstractMovieSnapshotView
+from mmasters.view.movie_snapshot_view import MovieSnapshotView
+from mmasters.model.movie_snapshot_creation_response import SavedMovieSnapshot, MovieSnapshotCreationResponse, \
+    FailedMovieSnapshot
 
 
 class MovieSnapshotService:
@@ -13,20 +15,23 @@ class MovieSnapshotService:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    def create(self, titles: List[str]) -> List[AbstractMovieSnapshotView]:
-        movie_snapshot_views = []
+    def create(self, titles: List[str]) -> MovieSnapshotCreationResponse:
+        saved_snapshots = []
+        failed_snapshots = []
+
         for title in titles:
             movie = self.__fetch_movie(title)
-            movie_snapshot_views.append(self.__save(movie))
-        return movie_snapshot_views
+            if movie.is_empty():
+                failed_snapshots.append(FailedMovieSnapshot(movie.title))
+            else:
+                saved_snapshots.append(self.__save(movie))
 
-    def __save(self, movie) -> AbstractMovieSnapshotView:
-        if isinstance(movie, EmptyMovie) is True:
-            return EmptyMovieSnapshotView(movie.title)
+        return MovieSnapshotCreationResponse(saved_snapshots=saved_snapshots,
+                                             failed_snapshots=failed_snapshots)
 
-        movie_snapshot = MovieSnapshotEntity.of(movie)
-        saved_movie_snapshot = movie_snapshot_repository.save(movie_snapshot)
-        return saved_movie_snapshot.to_snapshot_view()
+    def __save(self, movie) -> SavedMovieSnapshot:
+        movie_snapshot = movie_snapshot_repository.save(MovieSnapshotEntity.of(movie))
+        return movie_snapshot.to_saved_snapshot()
 
     def __fetch_movie(self, title: str) -> Movie:
         try:

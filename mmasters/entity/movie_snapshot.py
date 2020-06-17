@@ -6,6 +6,7 @@ from mmasters.client.model.movie import Movie
 from mmasters.config.database import db
 from mmasters.view.movie_snapshot_view import MovieSnapshotView
 from mmasters.view.rating_view import RatingView
+from mmasters.model.movie_snapshot_creation_response import SavedMovieSnapshot
 
 
 class MovieSnapshotEntity(db.Model):
@@ -29,6 +30,9 @@ class MovieSnapshotEntity(db.Model):
     def to_snapshot_view(self) -> MovieSnapshotView:
         ratings_view = [rating.to_snapshot_view() for rating in self.ratings]
         return MovieSnapshotView(self.id, self.title, self.release_year, self.release_date, self.director, ratings_view)
+
+    def to_saved_snapshot(self) -> SavedMovieSnapshot:
+        return SavedMovieSnapshot(self.id, self.title)
 
 
 class RatingEntity(db.Model):

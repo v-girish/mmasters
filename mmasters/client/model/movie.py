@@ -48,6 +48,10 @@ class Movie:
     def __repr__(self):
         return self.__str__()
 
+    def is_empty(self):
+        return False
+
+
 class Rating:
     def __init__(self, source: str, value: str):
         self.__source = source
@@ -76,3 +80,6 @@ class Rating:
 class EmptyMovie(Movie):
     def __init__(self, title: str):
         super().__init__(title, "", "", "", [])
+
+    def is_empty(self):
+        return True
