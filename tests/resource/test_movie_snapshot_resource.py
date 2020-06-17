@@ -138,7 +138,7 @@ class MovieSnapshotResourceTest(unittest.TestCase):
     def test_should_return_all_movie_snapshots_in_response_body(self):
         self.movie_snapshot_service.get_all.return_value = [MovieSnapshotViewBuilder()
                                                                 .with_title("3 Idiots")
-                                                                .with_snapshot_id(1)
+                                                                .with_id(1)
                                                                 .build()]
 
         response = self.test_client.get("/movies-snapshots")
