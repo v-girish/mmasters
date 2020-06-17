@@ -72,3 +72,13 @@ class MovieClientIntegrationTest(unittest.TestCase):
         expected_movie = EmptyMovie("Dangal")
 
         self.assertEqual(expected_movie, movie)
+
+    @requests_mock.Mocker()
+    def test_should_return_empty_movie_when_request_fails_with_a_timeout_error(self, mock_request):
+        self.movie_client_mock_server.timeout_error(mock_request, 'Dangal')
+
+        movie = movie_client.fetch('Dangal')
+
+        expected_movie = EmptyMovie("Dangal")
+
+        self.assertEqual(expected_movie, movie)

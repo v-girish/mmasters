@@ -1,5 +1,7 @@
 import json
 
+import requests
+
 from mmasters.client.model.movie import Movie
 
 
@@ -54,3 +56,7 @@ class MovieClientMockServer:
         mock_request.get(f'{self.__base_url}?t={title}&apikey={self.__api_key}',
                          text="Internal Server Error",
                          status_code=500)
+
+    def timeout_error(self, mock_request, title: str):
+        mock_request.get(f'{self.__base_url}?t={title}&apikey={self.__api_key}',
+                         exc=requests.exceptions.Timeout)

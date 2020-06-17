@@ -2,7 +2,7 @@ import logging
 
 import requests
 
-from mmasters.client.model.movie import Movie
+from mmasters.client.model.movie import Movie, EmptyMovie
 from flask import current_app as app
 
 from mmasters.client.response.movie_response import MovieResponse
@@ -16,7 +16,11 @@ class MovieClient:
     def fetch(self, title: str) -> Movie:
         omdb_api_base_url = app.config.get('OMDB_API_BASE_URL')
 
-        response = requests.get(omdb_api_base_url, params=self.__query_params(title))
+        try:
+            response = requests.get(omdb_api_base_url, params=self.__query_params(title))
+        except requests.exceptions.RequestException as exception:
+            self.logger.exception(f"Error while making request to fetch movie: {title}", exception)
+            return EmptyMovie(title)
 
         return MovieResponse(title, response).movie()
 
